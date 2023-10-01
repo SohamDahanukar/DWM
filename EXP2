@@ -1,0 +1,66 @@
+//olap operations
+-- Creating a Dimension Table named 'DimProduct'
+CREATE TABLE DimProduct (
+    ProductID INT PRIMARY KEY,
+    ProductName VARCHAR(255),
+    CategoryID INT,
+    -- Other Dimension attributes
+);
+
+-- Creating a Fact Table named 'FactSales'
+CREATE TABLE FactSales (
+    SaleID INT PRIMARY KEY,
+    ProductID INT,
+    DateID INT,
+    QuantitySold INT,
+    AmountSold DECIMAL(10, 2),
+    -- Other Fact attributes
+);
+
+-- Inserting values into 'DimProduct'
+INSERT INTO DimProduct (ProductID, ProductName, CategoryID)
+VALUES 
+    (1, 'Product A', 101),
+    (2, 'Product B', 102),
+    -- Additional values
+
+-- Inserting values into 'FactSales'
+INSERT INTO FactSales (SaleID, ProductID, DateID, QuantitySold, AmountSold)
+VALUES 
+    (1001, 1, 20230101, 10, 150.00),
+    (1002, 2, 20230102, 5, 75.00),
+
+-- Displaying contents of 'DimProduct'
+SELECT * FROM DimProduct;
+
+-- Displaying contents of 'FactSales'
+SELECT * FROM FactSales;
+
+-- Roll-up on Date Hierarchy in 'FactSales'
+SELECT Year(DateID) AS Year, Month(DateID) AS Month, SUM(QuantitySold) AS TotalQuantity
+FROM FactSales
+GROUP BY Year(DateID), Month(DateID);
+
+-- Slicing by Category in 'FactSales'
+SELECT CategoryID, SUM(QuantitySold) AS TotalQuantity
+FROM FactSales
+WHERE Year(DateID) = 2023 AND Month(DateID) = 1
+GROUP BY CategoryID;
+
+-- Pivoting data in 'FactSales'
+SELECT ProductID,
+       SUM(CASE WHEN Year(DateID) = 2023 AND Month(DateID) = 1 THEN QuantitySold ELSE 0 END) AS Jan2023Quantity,
+       SUM(CASE WHEN Year(DateID) = 2023 AND Month(DateID) = 2 THEN QuantitySold ELSE 0 END) AS Feb2023Quantity
+FROM FactSales
+GROUP BY ProductID;
+
+-- Drill-down on Date Hierarchy in 'FactSales'
+SELECT DateID, SUM(QuantitySold) AS TotalQuantity
+FROM FactSales
+WHERE Year(DateID) = 2023
+GROUP BY DateID;
+
+
+
+
+

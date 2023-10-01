@@ -1,4 +1,6 @@
 //olap operations
+Problem Statement: Performing OLAP operations on the product data
+
 -- Creating a Dimension Table named 'DimProduct'
 CREATE TABLE DimProduct (
     ProductID INT PRIMARY KEY,
